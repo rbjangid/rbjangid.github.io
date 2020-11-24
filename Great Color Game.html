@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta 
+     name='viewport' 
+     content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' 
+/>
+  <title>color game </title>
+  <link rel="stylesheet" href="colorgame.css">
+  <style>
+    html{
+      background-attachment: fixed;
+      
+    }
+    body {
+      background-color: black;
+      margin: 0;
+      font-family: "Montserrat", "Avenir";
+
+    }
+
+    .square {
+      width: 30%;
+      background: purple;
+      padding-bottom: 30%;
+      float: left;
+      margin: 1.66%;
+      border-radius: 20%;
+      transition: background 0.6s;
+      -webkit-transition: background 0.6s;
+      -moz-transition: background 0.6s;
+
+    }
+
+    #container {
+      margin: 20px auto;
+      max-width: 600px;
+    }
+
+    h1 {
+      text-align: center;
+      line-height: 1.1;
+      font-weight: normal;
+      text-transform: uppercase;
+      color: white;
+      background-color: steelblue;
+      margin: 0;
+      padding: 20px 0;
+    }
+
+    #message {
+      display: inline-block;
+      width: 20%;
+    }
+
+    #stripe {
+      background-color: #fff;
+      height: 30%;
+      text-align: center;
+      color: black;
+    }
+
+    .selected {
+      color: white;
+      background-color: steelblue;
+    }
+
+    #colorDisplay {
+      font-size: 130%;
+    }
+
+    button {
+      border: none;
+      background: none;
+      text-transform: uppercase;
+      height: 150%;
+      font-weight: 700;
+      color: steelblue;
+      letter-spacing: 1px;
+      font-size: inherit;
+      transition: all 0.5s;
+      -webkit-transition: all 0.3s;
+      -moz-transition: all 0.3s;
+      outline: none;
+
+    }
+
+    button:hover {
+      color: white;
+      background-color: steelblue;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>
+    The Great
+    <br>
+    <span id="colorDisplay">RGB</span>
+    <br>
+    Color Game
+  </h1>
+  <div id="stripe">
+    <button id="reset">New colors</button>
+    <span id="message"></span>
+    <button class="mode">Easy</button>
+    <button class="mode selected">Hard</button>
+
+  </div>
+  <div id="container">
+    <div class="square"></div>
+    <div class="square"></div>
+    <div class="square"></div>
+    <div class="square"></div>
+    <div class="square"></div>
+    <div class="square"></div>
+  </div>
+  <script>
+    alert("Need Help?? " +"\n"+
+      "1.See rgb(red, blue, green) numbers. " +"\n"+
+      "2.Color Intensity of square blocks depend upon Range of these colors. Range:0-255"+"\n"+"3.Guess color block(square) according to rgb(red,green,blue)"+ "\n" +" 4. After correct guess click on \"Play Again\"")
+
+    var numSquares = 6;
+    var colors = [];
+    var pickedColor;
+    var squares = document.querySelectorAll(".square");
+    var colorDisplay = document.getElementById("colorDisplay");
+    var messageDisplay = document.getElementById("message");
+    var h1 = document.querySelector("h1");
+    var resetButton = document.querySelector("#reset");
+    var modeButtons = document.querySelectorAll(".mode");
+
+    init();
+
+    function init() {
+      setupModeButtons();
+      setupSquares();
+      reset();
+    }
+
+    function setupModeButtons() {
+
+      for (var i = 0; i < modeButtons.length; i++) {
+        modeButtons[i].addEventListener("click", function () {
+          modeButtons[0].classList.remove("selected");
+          modeButtons[1].classList.remove("selected");
+          this.classList.add("selected");
+          this.textContent == "Easy" ? numSquares = 3 : numSquares = 6;
+          reset();
+        });
+      }
+    }
+    function setupSquares() {
+      for (var i = 0; i < squares.length; i++) {
+        // add click listners to squares
+        squares[i].addEventListener("click", function () {
+          // grab color of clicked square
+          var clickedColor = this.style.backgroundColor;
+          //compare color to pickedColor
+          if (clickedColor === pickedColor) {
+            messageDisplay.textContent = "Correct!"
+            resetButton.textContent = "Play Again"
+            changeColors(clickedColor);
+            h1.style.backgroundColor = clickedColor;
+          }
+          else {
+            this.style.backgroundColor = "#232323";
+            messageDisplay.textContent = "Try Again";
+          }
+        });
+      }
+
+    }
+
+    function reset() {
+      colors = generateRandomColors(numSquares);
+      //pick a new random color from array
+      pickedColor = pickColor();
+      colorDisplay.textContent = pickedColor;
+      resetButton.textContent = "New Colors";
+      messageDisplay.textContent = "";
+      for (var i = 0; i < squares.length; i++) {
+        if (colors[i]) {
+          squares[i].style.display = "block";
+          squares[i].style.background = colors[i];
+        }
+        else {
+          squares[i].style.display = "none";
+        }
+      }
+      h1.style.backgroundColor = "steelblue";
+    }
+
+
+    resetButton.addEventListener("click", function () {
+      reset();
+    })
+
+    function changeColors(color) {
+      //loop through all squares
+      for (var i = 0; i < squares.length; i++) {
+        squares[i].style.backgroundColor = color;
+      }
+      //change each color to match given color
+    }
+    function pickColor() {
+      var random = Math.floor(Math.random() * colors.length)
+      return colors[random]
+    }
+    function generateRandomColors(num) {
+      //make an array 
+      var arr = [];
+      //repeat num times
+      for (var i = 0; i < num; i++) {
+        arr.push(randomColor())
+        //get random color & push into arr    
+      }
+      //return that array  
+      return arr;
+    }
+    function randomColor() {
+      //pick a "red" from 0-255
+      var r = Math.floor(Math.random() * 256);
+      //pick a "green" from 0-255
+      var g = Math.floor(Math.random() * 256);
+      //pick a "blue" from 0-255
+      var b = Math.floor(Math.random() * 256);
+      "rgb(r,g,b)"
+      return "rgb(" + r + ", " + g + ", " + b + ")";
+    }   
+  </script>
+</body>
+
+</html>
